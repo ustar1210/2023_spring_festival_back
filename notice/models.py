@@ -11,3 +11,6 @@ class Notification(models.Model):
     type=models.CharField(max_length=10, choices=TYPE_CHOICES)
     content=models.TextField()
     created_at=models.DateTimeField(null=True, blank=True)
+
+class NotificationImage(models.Model):
+    notification=models.ForeignKey(Notification, on_delete=models.CASCADE)
