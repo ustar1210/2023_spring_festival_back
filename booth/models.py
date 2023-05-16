@@ -35,7 +35,7 @@ class Booth(models.Model):
     def __str__(self):
         return self.name
     
-    def like_count(self):
+    def like_cnt(self):
         count = len(Like.objects.filter(booth=self.pk))
         return count
 
