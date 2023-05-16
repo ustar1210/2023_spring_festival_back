@@ -1,5 +1,6 @@
 from django.db import models
 import random, string
+from core.models import BaseImage
 
 class Booth(models.Model):
     name = models.CharField(max_length=30)
@@ -65,3 +66,11 @@ class CommentReply(models.Model):
     ip_address=models.CharField(max_length=100)
     is_deleted=models.BooleanField(default=True)
     created_at=models.DateTimeField(null=True, blank=True)
+
+class MenuImage(BaseImage):
+    booth=models.ForeignKey(Booth, on_delete=models.CASCADE)
+
+
+class LogoImage(BaseImage):
+    booth=models.ForeignKey(Booth, on_delete=models.CASCADE)
+
