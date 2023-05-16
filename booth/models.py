@@ -32,7 +32,14 @@ class Booth(models.Model):
     menu=models.JSONField(default=dict)
     concept=models.CharField(max_length=100)
 
-def create_random_number(self):    
+    def __str__(self):
+        return self.name
+    
+    def like_count(self):
+        count = len(Like.objects.filter(booth=self.pk))
+        return count
+
+def create_random_number():    
     _LENGTH=10
     string_pool=string.ascii_letters+string.digits+string.punctuation
     result=""
@@ -46,8 +53,11 @@ class Like(models.Model):
         max_length=10,
         blank=True,
         editable=False,
-        default=create_random_number
+        default=create_random_number()
     )
+    
+    def __str__(self):
+        return f'{self.booth}/{self.key}'
 
 class Comment(models.Model):
     booth=models.ForeignKey(Booth, on_delete=models.CASCADE)
