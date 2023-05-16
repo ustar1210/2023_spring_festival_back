@@ -1,4 +1,5 @@
 from django.db import models
+from core.models import BaseImage
 
 class Notification(models.Model):
     title=models.CharField(max_length=30)
@@ -12,5 +13,5 @@ class Notification(models.Model):
     content=models.TextField()
     created_at=models.DateTimeField(null=True, blank=True)
 
-class NotificationImage(models.Model):
+class NotificationImage(BaseImage):
     notification=models.ForeignKey(Notification, on_delete=models.CASCADE)
