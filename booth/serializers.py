@@ -94,3 +94,8 @@ class BoothDetailSerializer(serializers.ModelSerializer):
             "concept",
             "is_liked",
             ]
+        
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ["booth", "key"]
