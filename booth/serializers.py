@@ -140,3 +140,8 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'writer', 'password', 'content', 'created_at', 'replies']
+        
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ["booth", "key"]
