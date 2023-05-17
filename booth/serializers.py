@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from django.contrib.auth.hashers import make_password
 
 class ImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -94,3 +95,48 @@ class BoothDetailSerializer(serializers.ModelSerializer):
             "concept",
             "is_liked",
             ]
+
+class CommentReplySerializer(serializers.ModelSerializer):
+    writer = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    content = serializers.CharField()
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.is_deleted:
+            representation['content'] = '삭제된 댓글입니다.'
+        return representation
+    
+    def create(self, validated_data):
+        comment = Comment.objects.get(id=self.context.get("view").kwargs.get("id"))
+        validated_data["comment"] = comment
+        return super().create(validated_data)
+    
+    class Meta:
+        model = CommentReply
+        fields = ['id', 'writer', 'password', 'content', 'created_at']
+        
+class CommentSerializer(serializers.ModelSerializer):
+    writer = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    content = serializers.CharField()
+    replies = serializers.SerializerMethodField()
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.is_deleted:
+            representation['content'] = '삭제된 댓글입니다.'
+        return representation
+    
+    def get_replies(self, instance):
+        replies = instance.commentreply_set.all()
+        return CommentReplySerializer(replies, many=True).data
+    
+    def create(self, validated_data):
+        booth = Booth.objects.get(id=self.context.get("view").kwargs.get("id"))
+        validated_data["booth"] = booth
+        return super().create(validated_data)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'writer', 'password', 'content', 'created_at', 'replies']

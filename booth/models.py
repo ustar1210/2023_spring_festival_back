@@ -61,20 +61,20 @@ class Comment(models.Model):
     booth=models.ForeignKey(Booth, on_delete=models.CASCADE)
     writer=models.CharField(max_length=30)
     content=models.TextField()
-    password=models.PositiveSmallIntegerField(null=False, blank=False)
+    password=models.CharField(null=False, blank=False)
     ip_address=models.CharField(max_length=100)
-    is_deleted=models.BooleanField(default=True)
-    created_at=models.DateTimeField(null=True, blank=True)
+    is_deleted=models.BooleanField(default=False)
+    created_at=models.DateTimeField(null=True, blank=True, auto_now=True)
 
 
 class CommentReply(models.Model):
     comment=models.ForeignKey(Comment, on_delete=models.CASCADE)
     writer=models.CharField(max_length=30)
     content=models.TextField()
-    password=models.PositiveSmallIntegerField(null=False, blank=False)
+    password=models.CharField(null=False, blank=False)
     ip_address=models.CharField(max_length=100)
-    is_deleted=models.BooleanField(default=True)
-    created_at=models.DateTimeField(null=True, blank=True)
+    is_deleted=models.BooleanField(default=False)
+    created_at=models.DateTimeField(null=True, blank=True, auto_now=True)
 
 
 class MenuImage(BaseImage):
