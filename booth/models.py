@@ -62,8 +62,8 @@ class Comment(models.Model):
     content=models.TextField()
     password=models.CharField(max_length=10, null=False, blank=False)
     ip_address=models.CharField(max_length=100)
-    is_deleted=models.BooleanField(default=True)
-    created_at=models.DateTimeField(null=True, blank=True)
+    is_deleted=models.BooleanField(default=False)
+    created_at=models.DateTimeField(null=True, blank=True, auto_now=True)
 
 
 class CommentReply(models.Model):
@@ -72,8 +72,8 @@ class CommentReply(models.Model):
     content=models.TextField()
     password=models.CharField(max_length=10, null=False, blank=False)
     ip_address=models.CharField(max_length=100)
-    is_deleted=models.BooleanField(default=True)
-    created_at=models.DateTimeField(null=True, blank=True)
+    is_deleted=models.BooleanField(default=False)
+    created_at=models.DateTimeField(null=True, blank=True, auto_now=True)
 
 
 class MenuImage(BaseImage):
