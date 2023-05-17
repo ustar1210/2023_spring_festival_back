@@ -11,17 +11,13 @@ class ImageSerializer(serializers.ModelSerializer):
         ]
 
 class BoothListSerializer(serializers.ModelSerializer):
-    
-    like_cnt = serializers.SerializerMethodField()
+
+    like_cnt=serializers.IntegerField()
     logo_image = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
 
-    def get_like_cnt(self, instance):
-        count = len(Like.objects.filter(booth=instance.pk))
-        return count
-
     def get_logo_image(self, instance):
-        logoimage = LogoImage.objects.filter(booth=instance.pk).first()
+        logoimage = instance.logoimages.first()
         try :
             logoimage_serializer = ImageSerializer(logoimage)
             return logoimage_serializer.data["image"]
@@ -49,17 +45,13 @@ class BoothListSerializer(serializers.ModelSerializer):
 
 class BoothDetailSerializer(serializers.ModelSerializer):
     
-    like_cnt = serializers.SerializerMethodField()
+    like_cnt=serializers.IntegerField()
     logo_image = serializers.SerializerMethodField()
     menu_image = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
 
-    def get_like_cnt(self, instance):
-        count = len(Like.objects.filter(booth=instance.pk))
-        return count
-
     def get_logo_image(self, instance):
-        logoimage = LogoImage.objects.filter(booth=instance.pk)
+        logoimage = instance.logoimages
         try :
             logoimage_serializer = ImageSerializer(logoimage, many=True)
             outcome = []
@@ -70,7 +62,7 @@ class BoothDetailSerializer(serializers.ModelSerializer):
             return None
     
     def get_menu_image(self, instance):
-        menuimage = MenuImage.objects.filter(booth=instance.pk)
+        menuimage = instance.menuimages
         try :
             menuimage_serializer = ImageSerializer(menuimage, many=True)
             outcome = []

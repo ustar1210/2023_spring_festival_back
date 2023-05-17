@@ -35,9 +35,6 @@ class Booth(models.Model):
     def __str__(self):
         return self.name
     
-    def like_cnt(self):
-        count = len(Like.objects.filter(booth=self.pk))
-        return count
 
 def create_random_number():    
     _LENGTH=10
@@ -47,8 +44,9 @@ def create_random_number():
         result += random.choice(string_pool)
     return result
 
+
 class Like(models.Model):
-    booth=models.ForeignKey(Booth, on_delete=models.CASCADE)
+    booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='likes')
     key=models.CharField(
         max_length=10,
         blank=True,
@@ -68,6 +66,7 @@ class Comment(models.Model):
     is_deleted=models.BooleanField(default=True)
     created_at=models.DateTimeField(null=True, blank=True)
 
+
 class CommentReply(models.Model):
     comment=models.ForeignKey(Comment, on_delete=models.CASCADE)
     writer=models.CharField(max_length=30)
@@ -77,10 +76,11 @@ class CommentReply(models.Model):
     is_deleted=models.BooleanField(default=True)
     created_at=models.DateTimeField(null=True, blank=True)
 
+
 class MenuImage(BaseImage):
-    booth=models.ForeignKey(Booth, on_delete=models.CASCADE)
+    booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='menuimages')
 
 
 class LogoImage(BaseImage):
-    booth=models.ForeignKey(Booth, on_delete=models.CASCADE)
+    booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='logoimages')
 
