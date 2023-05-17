@@ -5,7 +5,6 @@ from .models import *
 from .serializers import BoothListSerializer, BoothDetailSerializer, LikeSerializer
 from rest_framework.response import Response
 from django.db.models import Count
-from django.http import JsonResponse
 
 # Create your views here.
 
@@ -44,37 +43,28 @@ class BoothViewSet(mixins.ListModelMixin,
         return Response(ran_booth_serializer.data)
         
 
-    @action(methods=["POST"], detail=True, url_path='likes')
-    def create_like(self, request, pk=None):
+    @action(methods=["POST", "DELETE"], detail=True, url_path='likes')
+    def manage_like(self, request, pk=None):
         booth = self.get_object()
-        booth_id = booth.id
-
-        if booth_id in request.COOKIES:
-            return JsonResponse({'error': '이미 좋아요를 누르셨습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        key = create_random_number()
-        like = Like.objects.create(booth=booth, key=key)
-        serializer = LikeSerializer(like)
-
-        response = JsonResponse(serializer.data)
-        response.set_cookie(str(booth_id), key, max_age=None, expires=None)
-        return response
-    
-    
-    @action(methods=["DELETE"], detail=True, url_path='likes')
-    def delete_like(self, request, pk=None):
-        booth = self.get_object()
-        booth_id = booth.id
-
-        if booth_id not in request.COOKIES:
-            return JsonResponse({'error': '좋아요가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        key = request.COOKIES[booth_id]
-        like = Like.objects.filter(booth=booth, key=key)
-        if like.exists():
-            like.delete()
-            response = JsonResponse({'message': '좋아요 취소 완료'}, status=status.HTTP_204_NO_CONTENT)
-            response.delete_cookie(str(booth_id))
+        booth_id = str(booth.id)
+        if request.method == "POST":
+            if booth_id in request.COOKIES.keys():
+                return Response({'error': '이미 좋아요를 누르셨습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            key = create_random_number()
+            like = Like.objects.create(booth=booth, key=key)
+            serializer = LikeSerializer(like)
+            response = Response(serializer.data)
+            response.set_cookie(str(booth.id), key, max_age=None, expires=None)
             return response
         else:
-            return JsonResponse({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            if booth_id not in request.COOKIES.keys():
+                return Response({'error': '좋아요가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            key = request.COOKIES[booth_id]
+            like = Like.objects.filter(booth=booth, key=key)
+            if like.exists():
+                like.delete()
+                response = Response({'message': '좋아요 취소 완료'}, status=status.HTTP_204_NO_CONTENT)
+                response.delete_cookie(str(booth.id))
+                return response
+            else:
+                return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
