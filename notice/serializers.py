@@ -16,7 +16,8 @@ class NotificationSerializer(serializers.ModelSerializer):
         # images = obj.notificationimage_set.all()
         # return NotificationImageSerializer(images, context=self.context, many=True).data
         image_urls = []
-        for image in obj.notificationimage_set.all():
+        images = obj.notificationimage_set.all().order_by('id')
+        for image in images:
             url = image.image.url
             image_urls.append(url)
         return image_urls

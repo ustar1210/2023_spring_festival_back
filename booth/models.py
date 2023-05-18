@@ -28,7 +28,7 @@ class Booth(models.Model):
         ('학림관','학림관'),
     )
     location=models.CharField(max_length=10, choices=LOCATION_CHOICES)
-    description=models.CharField(max_length=30)
+    description=models.CharField(max_length=50)
     menu=models.JSONField(default=dict)
     concept=models.CharField(max_length=100)
 

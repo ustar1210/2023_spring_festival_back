@@ -4,11 +4,12 @@ from django.contrib.auth.hashers import make_password
 
 class ImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
-
+    
     class Meta:
         model = LogoImage
         fields = [
             "image",
+            "id",
         ]
 
 class BoothListSerializer(serializers.ModelSerializer):
@@ -52,7 +53,7 @@ class BoothDetailSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
 
     def get_logo_image(self, instance):
-        logoimage = instance.logoimages
+        logoimage = instance.logoimages.all().order_by('id')
         try :
             logoimage_serializer = ImageSerializer(logoimage, many=True)
             outcome = []
@@ -63,7 +64,7 @@ class BoothDetailSerializer(serializers.ModelSerializer):
             return None
     
     def get_menu_image(self, instance):
-        menuimage = instance.menuimages
+        menuimage = instance.menuimages.all().order_by('id')
         try :
             menuimage_serializer = ImageSerializer(menuimage, many=True)
             outcome = []
