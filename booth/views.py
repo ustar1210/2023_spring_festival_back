@@ -7,6 +7,8 @@ from .serializers import BoothListSerializer, BoothDetailSerializer, CommentSeri
 from rest_framework.response import Response
 from django.db.models import Count
 
+import datetime
+
 # Create your views here.
 
 class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
@@ -33,11 +35,11 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
         hot_booths = self.get_queryset().order_by('-like_cnt')[:3]
         hot_booths_serializer = BoothListSerializer(hot_booths, many=True)
         return Response(hot_booths_serializer.data)
-    
 
     @action(methods=["GET"], detail=False)
     def recommend(self, request):
-        ran_booth = self.get_queryset().order_by('?')[:2]
+        today = datetime.date.today()
+        ran_booth = self.get_queryset().filter(start_at__lte=today, end_at__gte=today).order_by('?')[:2]
         ran_booth_serializer = BoothListSerializer(ran_booth, many=True)
         return Response(ran_booth_serializer.data)
 
