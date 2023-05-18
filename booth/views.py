@@ -40,8 +40,7 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
         ran_booth = self.get_queryset().order_by('?')[:2]
         ran_booth_serializer = BoothListSerializer(ran_booth, many=True)
         return Response(ran_booth_serializer.data)
-      
-      
+
     @action(methods=["POST", "DELETE"], detail=True, url_path='likes')
     def manage_like(self, request, pk=None):
         booth = self.get_object()
@@ -91,7 +90,7 @@ class CommentViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.Destro
             return Response({'message':'댓글이 삭제되었습니다.'})
         return Response(status=400)
     
-class CommentReplyViewSet(mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class CommentReplyViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     serializer_class = CommentReplySerializer
     queryset = CommentReply.objects.all()
 
