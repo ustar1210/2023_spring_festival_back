@@ -14,4 +14,5 @@ urlpatterns = [
     path("booths/<int:id>/", include(comment_router.urls)),
     path("", include(comment_router.urls)),
     path("comments/<int:id>/", include(comment_reply_router.urls)),
+    path("", include(comment_reply_router.urls)),
 ]
