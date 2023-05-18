@@ -27,8 +27,15 @@ class BoothListSerializer(serializers.ModelSerializer):
             return None
     
     def get_is_liked(self, instance):
-        #아직 구현 안함
-        return None
+        request = self.context.get('request')
+        booth_id = instance.id
+        if request:
+            booth_key = str(booth_id)
+            cookies = request.COOKIES
+            if booth_key in cookies:
+                like_exists = Like.objects.filter(booth=instance, key=cookies[booth_key]).exists()
+                return like_exists
+        return False
 
     class Meta:
         model = Booth
@@ -75,8 +82,15 @@ class BoothDetailSerializer(serializers.ModelSerializer):
             return None
 
     def get_is_liked(self, instance):
-        #아직 구현 안함
-        return None
+        request = self.context.get('request')
+        booth_id = instance.id
+        if request:
+            booth_key = str(booth_id)
+            cookies = request.COOKIES
+            if booth_key in cookies:
+                like_exists = Like.objects.filter(booth=instance, key=cookies[booth_key]).exists()
+                return like_exists
+        return False
     
     class Meta:
         model = Booth
