@@ -16,12 +16,13 @@ class Booth(models.Model):
     end_at=models.DateField(null=True, blank=True)
     LOCATION_CHOICES=(
         ('이해랑예술극장','이해랑예술극장'),
+        ('나체밭','나체밭'),
         ('사회과학관','사회과학관'),
         ('혜화관','혜화관'),
         ('혜화별관','혜화별관'),
+        ('법학관','법학관'),
         ('명진관','명진관'),
-        ('팔정도','팔정도'),
-        ('원흥관 4층','원흥관 4층'),
+        ('본관','본관'),
         ('만해광장','만해광장'),
         ('학생회관','학생회관'),
         ('학림관','학림관'),
@@ -30,7 +31,6 @@ class Booth(models.Model):
     description=models.CharField(max_length=50)
     menu=models.JSONField(default=dict)
     concept=models.CharField(max_length=100)
-    section=models.CharField(max_length=5)
 
     def __str__(self):
         return self.name

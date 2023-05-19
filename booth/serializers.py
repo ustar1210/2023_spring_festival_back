@@ -49,7 +49,6 @@ class BoothListSerializer(serializers.ModelSerializer):
             "start_at",
             "end_at",
             "location",
-            "section",
             "is_liked",
         ]
 
@@ -105,7 +104,6 @@ class BoothDetailSerializer(serializers.ModelSerializer):
             "start_at",
             "end_at",
             "location",
-            "section",
             "description",
             "menu",
             "menu_image",
