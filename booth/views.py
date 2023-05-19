@@ -32,7 +32,7 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
     @action(methods=["GET"], detail=False)
     def hot(self, request):
         today = timezone.now()
-        hot_booths = self.get_queryset().filter(start_at__lte=today, end_at__gte=today).order_by('-like_cnt')[:3]
+        hot_booths = self.get_queryset().filter(start_at__lte=today, end_at__gte=today).order_by('-like_cnt')[:10]
         hot_booths_serializer = BoothListSerializer(hot_booths, many=True)
         return Response(hot_booths_serializer.data)
 
