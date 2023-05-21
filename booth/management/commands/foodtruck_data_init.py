@@ -7,7 +7,8 @@ from datetime import datetime
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        excel_file = "C:/Users/USER/Desktop/FoodTruck.xlsx"
+        script_dir = os.path.dirname(__file__)
+        excel_file = os.path.join(script_dir, "FoodTruck.xlsx")
         wb = openpyxl.load_workbook(excel_file)
         sheet = wb['Sheet1']
 
