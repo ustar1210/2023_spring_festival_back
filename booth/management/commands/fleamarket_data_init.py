@@ -5,17 +5,16 @@ from datetime import datetime
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        excel_file = "C:/Users/USER/Desktop/DaytimeBooth.xlsx"
+        excel_file = "C:/Users/USER/Desktop/FleaMarket.xlsx"
         wb = openpyxl.load_workbook(excel_file)
         sheet = wb['Sheet1']
 
-        for i in range(2,26):
+        for i in range(2,31):
             row = sheet[i]
             name=row[0].value
             start_end_dates=row[1].value
-            location=row[2].value
-            type=row[3].value
-            operator=row[4].value
+            operator=row[2].value
+            description=row[3].value
             start_at, end_at = self.parse_start_end_dates(start_end_dates)
             error=False
 
@@ -25,22 +24,22 @@ class Command(BaseCommand):
                     booth.name=name
                     booth.start_at=start_at
                     booth.end_at=end_at
-                    booth.location=location
-                    booth.type=type
                     booth.operator=operator
+                    booth.description=description
+                    booth.type=type
                     booth.save()
-                    print(f"{name} 주간부스(학교부스,외부부스) 수정 완료")
+                    print(f"{name} 플리마켓 수정 완료")
                 except Booth.DoesNotExist:
                         booth = Booth.objects.create(
                             name=name,
                             start_at=start_at,
                             end_at=end_at,
-                            location=location,
-                            type=type,
                             operator=operator,
+                            description=description,
+                            type='플리마켓',
                         )
                         booth.save() 
-                        print(f"{name} 주간부스(학교부스,외부부스) 생성 완료")       
+                        print(f"{name} 플리마켓 생성 완료")       
 
     def parse_start_end_dates(self,date_range):
         date_range = str(date_range)
@@ -59,11 +58,3 @@ class Command(BaseCommand):
         except:
             print(f"{date_str}이상함")
         return date
-
-    def location_in_choices(self,location):
-        LOCATION_CHOICES = [choice[0] for choice in Booth.LOCATION_CHOICES]
-        return location in LOCATION_CHOICES
-    
-    def type_in_choices(self,type):
-        TYPE_CHOICES = [choice[0] for choice in Booth.TYPE_CHOICES]
-        return type in TYPE_CHOICES
