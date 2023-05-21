@@ -2,14 +2,15 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils import timezone
 from booth.models import Booth, MenuImage, LogoImage
-import openpyxl, os, json, re
+import openpyxl, os
 from PIL import Image
 from django.core.files import File
 from datetime import datetime
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        excel_file = "C:/Users/USER/Desktop/NigthBooth.xlsx"
+        script_dir = os.path.dirname(__file__)
+        excel_file = os.path.join(script_dir, "NigthBooth.xlsx")
         wb = openpyxl.load_workbook(excel_file)
         sheet = wb['Sheet1']
 
