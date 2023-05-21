@@ -2,20 +2,20 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils import timezone
 from booth.models import Booth, MenuImage, LogoImage
-import openpyxl, os
+import openpyxl, os, json, re
 from PIL import Image
 from django.core.files import File
 from datetime import datetime
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        excel_file = "C:/Users/USER/Desktop/야간부스 정보 취합.xlsx"
+        excel_file = "C:/Users/USER/Desktop/NigthBooth.xlsx"
         wb = openpyxl.load_workbook(excel_file)
         sheet = wb['Sheet1']
 
         logo_images = "C:/Users/USER/Desktop/image"
         image_list = os.listdir(logo_images)
-        for i in range(2,57):
+        for i in range(2,58):
             row = sheet[i]
             operator=row[0].value
             start_end_dates=row[1].value
@@ -101,6 +101,66 @@ class Command(BaseCommand):
 
         print(image_list)
 
+        # 푸드트럭 정보
+        excel_file = "C:/Users/USER/Desktop/FoodTruck.xlsx"
+        wb = openpyxl.load_workbook(excel_file)
+        sheet = wb['Sheet1']
+
+        for i in range(2,15):
+            row = sheet[i]
+            name=row[0].value
+            menu_price=row[1].value
+            description=row[2].value
+            location=row[3].value
+            start_end_dates=row[4].value
+            start_at, end_at = self.parse_start_end_dates(start_end_dates)
+            error=False
+
+            if not error:
+                try:
+                    booth=Booth.objects.get(name=name)
+                    booth.name=name
+
+                    menu_dict = {}
+                    menu_items = menu_price.split(",")
+                    for menu_item in menu_items:
+                        match = re.match(r"(.+):(\d+)", menu_item)
+                        if match:
+                            menu_name = match.group(1)
+                            price = int(match.group(2))
+                            menu_dict[menu_name] = price
+
+                    booth.menu = menu_dict
+
+                    booth.description = description
+                    booth.location=location
+                    booth.start_at=start_at
+                    booth.end_at=end_at
+                    booth.save()
+                    print(f"{name} 푸드트럭 수정 완료")
+                except Booth.DoesNotExist:
+                        menu_dict = {}
+
+                        menu_items = menu_price.split(",")
+                        for menu_item in menu_items:
+                            match = re.match(r"(.+):(\d+)", menu_item)
+                            if match:
+                                menu_name = match.group(1)
+                                price = int(match.group(2))
+                                menu_dict[menu_name] = price
+
+                        booth = Booth.objects.create(
+                            name=name,
+                            menu=menu_dict,
+                            description=description,
+                            start_at=start_at,
+                            end_at=end_at,
+                            location=location,
+                            type='푸드트럭'
+                        )
+                        booth.save() 
+                        print(f"{name} 푸드트럭 생성 완료")       
+
     def parse_start_end_dates(self,date_range):
         date_range = str(date_range)
         if '-' in date_range:
@@ -128,6 +188,12 @@ class Command(BaseCommand):
             jpg = Image.open(filepath+".jpg")
             jpg.close()
             return filepath+".jpg"
+        except Exception:
+            pass
+        try:
+            jpeg = Image.open(filepath+".jpeg")
+            jpeg.close()
+            return filepath+".jpeg"
         except Exception:
             pass
         try:
