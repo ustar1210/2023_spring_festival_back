@@ -9,6 +9,8 @@ class Booth(models.Model):
         ('야간부스','야간부스'),
         ('플리마켓','플리마켓'),
         ('푸드트럭','푸드트럭'),
+        ('학교부스','학교부스'),
+        ('외부부스','외부부스'),
     )
     type=models.CharField(max_length=10, choices=TYPE_CHOICES)
     operator=models.CharField(max_length=20)
