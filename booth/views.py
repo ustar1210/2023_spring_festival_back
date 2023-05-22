@@ -96,7 +96,7 @@ class CommentViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.Destro
             return Response({'message':'댓글이 삭제되었습니다.'})
         return Response(status=400)
     
-class CommentReplyViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class CommentReplyViewSet(mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     serializer_class = CommentReplySerializer
     queryset = CommentReply.objects.all()
 
