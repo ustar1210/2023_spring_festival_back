@@ -32,7 +32,7 @@ class Booth(models.Model):
     description=models.CharField(max_length=50)
     menu=models.JSONField(default=dict)
     concept=models.CharField(max_length=100)
-    section=models.CharField(max_length=5)
+    section=models.PositiveIntegerField(null=True)
 
     def __str__(self):
         return self.name
