@@ -12,15 +12,18 @@ class NotificationImageSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
 
-    def get_images(self, obj):
-        # images = obj.notificationimage_set.all()
-        # return NotificationImageSerializer(images, context=self.context, many=True).data
-        image_urls = []
-        images = obj.notificationimage_set.all().order_by('id')
-        for image in images:
-            url = image.image.url
-            image_urls.append(url)
-        return image_urls
+    def get_images(self, instance):
+        request=self.context.get('request')
+        noticeimage=instance.notificationimage_set.all().order_by('id')
+        try:
+            noticeimage_serializer=NotificationImageSerializer(noticeimage, many=True)
+            outcome = []
+            for data in noticeimage_serializer.data:
+                image_url = request.build_absolute_uri(data["image"])
+                outcome.append(image_url)
+            return outcome
+        except:
+            return None
     
     class Meta:
         model = Notification
