@@ -28,10 +28,6 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
                 return self.detail_serializer_class
         return super().get_serializer_class()
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
 
     @action(methods=["GET"], detail=False)
     def hot(self, request):
@@ -44,7 +40,7 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
     def recommend(self, request):
         today = timezone.now()
         ran_booth = self.get_queryset().filter(start_at__lte=today, end_at__gte=today).order_by('?')[:2]
-        ran_booth_serializer = BoothListSerializer(ran_booth, many=True, context={'request': request})
+        ran_booth_serializer = BoothListSerializer(ran_booth, many=True)
         return Response(ran_booth_serializer.data)
 
     @action(methods=["POST", "DELETE"], detail=True, url_path='likes')
@@ -60,14 +56,14 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
             response = Response(serializer.data)
             response.set_cookie(str(booth.id), key, max_age=None, expires=None)
             return response
-        else:
+        elif request.method=="DELETE":
             if booth_id not in request.COOKIES.keys():
                 return Response({'error': '좋아요가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
             key = request.COOKIES[booth_id]
             like = Like.objects.filter(booth=booth, key=key)
             if like.exists():
                 like.delete()
-                response = Response({'message': '좋아요 취소 완료'}, status=status.HTTP_204_NO_CONTENT)
+                response = Response({'message': '좋아요 취소 완료'})
                 response.delete_cookie(str(booth.id))
                 return response
             else:
@@ -77,11 +73,7 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
 class CommentViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     
     serializer_class = CommentSerializer
-    def get_queryset(self, *args, **kwargs):
-        queryset = Comment.objects.filter(
-                booth__id=self.kwargs.get("id")
-            )
-        return queryset
+    queryset = Comment.objects.all()
 
     def perform_create(self, serializer):
         x_forwarded_for = self.request.META.get('HTTP_X_FORWARDED_FOR')
@@ -100,7 +92,7 @@ class CommentViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.Destro
             return Response({'message':'댓글이 삭제되었습니다.'})
         return Response(status=400)
     
-class CommentReplyViewSet(mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class CommentReplyViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     serializer_class = CommentReplySerializer
     queryset = CommentReply.objects.all()
 
