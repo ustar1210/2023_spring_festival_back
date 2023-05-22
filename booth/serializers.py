@@ -19,11 +19,13 @@ class BoothListSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
 
     def get_logo_image(self, instance):
+        request=self.context.get('request')
         logoimage = instance.logoimages.first()
-        try :
+        if logoimage:
             logoimage_serializer = ImageSerializer(logoimage)
-            return logoimage_serializer.data["image"]
-        except:
+            image_url = request.build_absolute_uri(logoimage_serializer.data["image"])
+            return image_url
+        else:
             return None
     
     def get_is_liked(self, instance):
@@ -61,23 +63,27 @@ class BoothDetailSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
 
     def get_logo_image(self, instance):
+        request=self.context.get('request')
         logoimage = instance.logoimages.all().order_by('id')
         try :
             logoimage_serializer = ImageSerializer(logoimage, many=True)
             outcome = []
             for data in logoimage_serializer.data:
-                outcome.append(data["image"])
+                image_url = request.build_absolute_uri(data["image"])
+                outcome.append(image_url)
             return outcome
         except:
             return None
     
     def get_menu_image(self, instance):
+        request=self.context.get('request')
         menuimage = instance.menuimages.all().order_by('id')
         try :
             menuimage_serializer = ImageSerializer(menuimage, many=True)
             outcome = []
             for data in menuimage_serializer.data:
-                outcome.append(data["image"])
+                image_url = request.build_absolute_uri(data["image"])
+                outcome.append(image_url)
             return outcome
         except:
             return None

@@ -28,6 +28,10 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
                 return self.detail_serializer_class
         return super().get_serializer_class()
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
     @action(methods=["GET"], detail=False)
     def hot(self, request):
@@ -40,7 +44,7 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
     def recommend(self, request):
         today = timezone.now()
         ran_booth = self.get_queryset().filter(start_at__lte=today, end_at__gte=today).order_by('?')[:2]
-        ran_booth_serializer = BoothListSerializer(ran_booth, many=True)
+        ran_booth_serializer = BoothListSerializer(ran_booth, many=True, context={'request': request})
         return Response(ran_booth_serializer.data)
 
     @action(methods=["POST", "DELETE"], detail=True, url_path='likes')
