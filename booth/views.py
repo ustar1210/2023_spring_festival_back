@@ -63,7 +63,7 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
             like = Like.objects.filter(booth=booth, key=key)
             if like.exists():
                 like.delete()
-                response = Response({'message': '좋아요 취소 완료'}, status=status.HTTP_204_NO_CONTENT)
+                response = Response({'message': '좋아요 취소 완료'})
                 response.delete_cookie(str(booth.id))
                 return response
             else:
