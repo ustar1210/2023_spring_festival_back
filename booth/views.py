@@ -77,7 +77,11 @@ class BoothViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.Gene
 class CommentViewSet(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     
     serializer_class = CommentSerializer
-    queryset = Comment.objects.all()
+    def get_queryset(self, *args, **kwargs):
+        queryset = Comment.objects.filter(
+                booth__id=self.kwargs.get("id")
+            )
+        return queryset
 
     def perform_create(self, serializer):
         x_forwarded_for = self.request.META.get('HTTP_X_FORWARDED_FOR')
